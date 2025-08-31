@@ -14,6 +14,7 @@ using namespace std;
 #define FLAG_SYMBOL "F"
 #define HIDDEN_SYMBOL "-"
 #define EMPTY_SYMBOL " "
+int flagsLeft;
 
 // ===========================
 //    STRUCT DEFINITIONS
@@ -22,16 +23,16 @@ struct Player
 {
     string name;
     string difficulty;
-    int timeTaken; // in seconds
-    string result; // "Win" or "Loss"
+    int timeTaken;
+    string result;
 
-    void playGame(); // member function
+    void playGame();
 };
 
 struct GameSettings
 {
-    int boardSize; // Board size (depends on difficulty)
-    int bombCount; // Number of bombs
+    int boardSize;
+    int bombCount;
     string difficultyName;
 };
 
@@ -39,9 +40,8 @@ struct GameSettings
 //    FUNCTION DECLARATIONS
 // ===========================
 void displayMenu();
-// for input validation of every input,where prompt shows appropriate msg before taking input
 int getValidatedInt(string prompt, int min, int max);
-char **allocateBoard(int size); // according to difficulty level
+char **allocateBoard(int size);
 void initializeBoards(char **actualBoard, char **visibleBoard, int size);
 void placeBombs(char **board, int size, int bombCount, int safeRow, int safeCol);
 string getDifficultyName(int difficulty);
@@ -65,42 +65,41 @@ string toLower(string str);
 // ===========================
 int main()
 {
-    srand(time(0)); // for random bomb placement
+    srand(time(0));
 
     int choice;
     do
     {
-        displayMenu();                      // Show menu
-        choice = getValidatedInt("", 1, 5); // Get validated menu choice
+        displayMenu();
+        choice = getValidatedInt("", 1, 5);
 
         switch (choice)
         {
         case 1:
         {
-            // Start new game
             Player p;
             p.playGame();
             break;
         }
         case 2:
-            showHighScores(); // Show highscores
+            showHighScores();
             break;
         case 3:
-            showPlayerStats(); // Show stats
+            showPlayerStats();
             break;
         case 4:
-            showHelp(); // Show help
+            showHelp();
             break;
         case 5:
-            cout << "Exiting the game. Goodbye!\n"; // Exit
+            cout << "Exiting the game. Goodbye!\n";
             break;
         default:
             cout << "Invalid option.\n";
         }
         if (choice != 5)
         {
-            pauseGame();   // Pause before clearing and showing press any key to continue ....
-            clearScreen(); // Clear console
+            pauseGame();
+            clearScreen();
         }
     } while (choice != 5);
 
@@ -112,13 +111,21 @@ int main()
 // ===========================
 void displayMenu()
 {
+    setColor(11);
     cout << "\n===== MINESWEEPER MENU =====\n";
+    setColor(14);
     cout << "1. Play Game\n";
+    setColor(10);
     cout << "2. View High Scores\n";
+    setColor(13);
     cout << "3. Player Stats\n";
+    setColor(9);
     cout << "4. Help\n";
+    setColor(12);
     cout << "5. Exit\n";
+    setColor(11);
     cout << "=============================\n";
+    setColor(7);
     cout << "Enter your choice: ";
 }
 
@@ -131,17 +138,17 @@ int getValidatedInt(string prompt, int min, int max)
     while (true)
     {
         if (!prompt.empty())
-            cout << prompt; // If prompt is not empty show the msg in prompt
+            cout << prompt;
         cin >> value;
-        if (cin.fail() || value < min || value > max) // If input is not appropriate like for int type it is 123abc
+        if (cin.fail() || value < min || value > max)
         {
-            cin.clear();            // Clear input buffer after input is failed
-            cin.ignore(1000, '\n'); // Throw away at most 1000 characters but stop as soon as a newline is found
+            cin.clear();
+            cin.ignore(1000, '\n');
             cout << "Invalid input. Enter a number between " << min << " and " << max << ".\n";
         }
         else
         {
-            return value; // Valid input
+            return value;
         }
     }
 }
@@ -151,20 +158,6 @@ int getValidatedInt(string prompt, int min, int max)
 // ===========================
 void Player::playGame()
 {
-    /*
-    Steps:
-    1. Ask player name
-    2. Select difficulty(easy,difficult,hard)
-    3. Auto-assign bombs (based on difficulty)
-    4. Allocate and initialize boards
-    5. Pick a safe start cell and place bombs elsewhere
-    6. Reveal safe cell before showing board
-    7. Run game loop until player Win or Loss
-    8. Record end time and calculate total time
-    9. Update players score in high score list
-    10. Free memory for board
-    */
-
     Player player;
     cout << "Enter your name: ";
     cin >> player.name;
@@ -184,56 +177,58 @@ void Player::playGame()
         settings.difficultyName = getDifficultyName(difficulty);
         player.difficulty = settings.difficultyName;
 
-        //  Auto bomb count based on difficulty
-        if (difficulty == 1) // Easy = 15%
+        if (difficulty == 1)
             settings.bombCount = (settings.boardSize * settings.boardSize) * 15 / 100;
-        else if (difficulty == 2) // Medium = 18%
+        else if (difficulty == 2)
             settings.bombCount = (settings.boardSize * settings.boardSize) * 18 / 100;
-        else // Hard = 20%
+        else
             settings.bombCount = (settings.boardSize * settings.boardSize) * 20 / 100;
+        flagsLeft = settings.bombCount;
 
-        // Allocate memory
+        if (settings.difficultyName == "Easy")
+            setColor(10);
+        else if (settings.difficultyName == "Medium")
+            setColor(14);
+        else
+            setColor(12);
+
+        cout << "\nStarting Game: " << settings.difficultyName << " Mode\n";
+        setColor(7);
+
         char **actualBoard = allocateBoard(settings.boardSize);
         char **visibleBoard = allocateBoard(settings.boardSize);
 
-        // Initialize both boards
         initializeBoards(actualBoard, visibleBoard, settings.boardSize);
 
-        //  Random safe starting cell
         int startRow = rand() % settings.boardSize;
         int startCol = rand() % settings.boardSize;
 
-        // Place bombs except safe cell
         placeBombs(actualBoard, settings.boardSize, settings.bombCount, startRow, startCol);
 
-        // Reveal safe starting cell immediately
         revealCell(actualBoard, visibleBoard, startRow, startCol, settings.boardSize);
 
-        // Start timer
         time_t startTime = time(0);
 
-        // Run game loop
         gameLoop(actualBoard, visibleBoard, settings, player);
 
-        // End timer
         time_t endTime = time(0);
-        player.timeTaken = static_cast<int>(endTime - startTime); // Calculate timetaken and doing typecasting
+        player.timeTaken = static_cast<int>(endTime - startTime);
 
-        // Save highscore
         updateHighScores(player);
 
-        // Free memory
         freeBoard(actualBoard, settings.boardSize);
         freeBoard(visibleBoard, settings.boardSize);
 
-        // After one game: ask to play again or go back to main menu
         cout << "\nWhat do you want to do next?\n";
+        setColor(10);
         cout << "1. Play Again\n";
+        setColor(14);
         cout << "2. Go Back to Main Menu\n";
+        setColor(7);
         int nextChoice = getValidatedInt("Enter choice: ", 1, 2);
+
         if (nextChoice == 2)
-            break; // go back to main menu
-        // if 1, loop continues and difficulty will be asked again
+            break;
     }
 }
 
@@ -271,7 +266,6 @@ void placeBombs(char **board, int size, int bombCount, int safeRow, int safeCol)
         int row = rand() % size;
         int col = rand() % size;
 
-        // Skip safe cell
         if ((row == safeRow && col == safeCol) || board[row][col] == BOMB_SYMBOL[0])
             continue;
 
@@ -297,7 +291,7 @@ string getDifficultyName(int difficulty)
 // ===========================
 void clearScreen()
 {
-    system("cls"); // clear console
+    system("cls");
 }
 
 void pauseGame()
@@ -310,15 +304,6 @@ void pauseGame()
 // ===========================
 void printBoard(char **visibleBoard, int size)
 {
-    /*  Sample Visible Board Output
-
-      0  1  2  3  4
-   0 | -  -  -  -  -
-   1 | -  F  -  -  -
-   2 | -  -  2  -  -
-   3 | -  -  -  -  -
-   4 | -  -  -  -  -
-   */
     cout << "\n   ";
     for (int col = 0; col < size; ++col)
         cout << (col < 10 ? " " : "") << col << " ";
@@ -331,19 +316,19 @@ void printBoard(char **visibleBoard, int size)
         {
             char cell = visibleBoard[row][col];
             if (cell == BOMB_SYMBOL[0])
-                setColor(12); // red for bombs
+                setColor(12);
             else if (cell == FLAG_SYMBOL[0])
-                setColor(14); // yellow for flags
+                setColor(14);
             else if (cell >= '1' && cell <= '8')
-                setColor(9); // blue for numbers(1-8)
+                setColor(9);
             else if (cell == EMPTY_SYMBOL[0])
-                setColor(10); // green for empty revealed cells
+                setColor(10);
             else
-                setColor(7); // gray for othr cases
+                setColor(7);
 
             cout << cell << "  ";
         }
-        setColor(7); // reset color back to default after finishing the row
+        setColor(7);
         cout << "\n";
     }
 }
@@ -351,34 +336,30 @@ void printBoard(char **visibleBoard, int size)
 // ===========================
 // GAME LOOP
 // ===========================
+time_t startTime = time(0);
+
 void gameLoop(char **actualBoard, char **visibleBoard, GameSettings settings, Player &player)
 {
+    time_t startTime = time(0);
     int row, col;
     char action;
     bool gameOver = false;
-    /*
-  Game runs until player wins (all safe cells revealed) or loses (hits bomb).
-
-  Loop steps:
-  1. Show board.
-  2. Get row & column (skip if already revealed/flagged).
-  3. Get action (reveal or flag).
-  4. If flag : place/remove flag.
-  5. If reveal:
-     - Bomb : game over (loss).
-     - Safe : reveal cells, then check win.
-  6. If win/loss : exit loop.
-  */
 
     while (!gameOver)
     {
-        printBoard(visibleBoard, settings.boardSize); // show current board state
+        clearScreen();
+        time_t currentTime = time(0);
+        int elapsed = static_cast<int>(currentTime - startTime);
 
-        // Get row and col input
+        setColor(11);
+        cout << "Time: " << elapsed << "s";
+        cout << "   Flags Left: " << flagsLeft << "/" << settings.bombCount << "\n";
+        setColor(7);
+        printBoard(visibleBoard, settings.boardSize);
+
         row = getValidatedInt("\nEnter row: ", 0, settings.boardSize - 1);
         col = getValidatedInt("Enter column: ", 0, settings.boardSize - 1);
 
-        // error handling for row and col
         if (visibleBoard[row][col] != HIDDEN_SYMBOL[0] && visibleBoard[row][col] != FLAG_SYMBOL[0])
         {
             cout << "This cell is already revealed. Try again.\n";
@@ -393,18 +374,21 @@ void gameLoop(char **actualBoard, char **visibleBoard, GameSettings settings, Pl
         {
             if (actualBoard[row][col] == BOMB_SYMBOL[0])
             {
+                setColor(12);
                 cout << "\nBOOM! You hit a bomb!\n";
-                printBoard(actualBoard, settings.boardSize); // reveal full board
+                setColor(7);
+                printBoard(actualBoard, settings.boardSize);
                 gameOver = true;
                 player.result = "Loss";
             }
+
             else
             {
                 revealCell(actualBoard, visibleBoard, row, col, settings.boardSize);
                 if (checkWin(actualBoard, visibleBoard, settings.boardSize, settings.bombCount))
                 {
                     cout << "\nCongratulations! You cleared the minefield!\n";
-                    printBoard(actualBoard, settings.boardSize); // reveal full board
+                    printBoard(actualBoard, settings.boardSize);
                     gameOver = true;
                     player.result = "Win";
                 }
@@ -419,6 +403,7 @@ void gameLoop(char **actualBoard, char **visibleBoard, GameSettings settings, Pl
             cout << "Invalid action!\n";
         }
     }
+    player.timeTaken = static_cast<int>(time(0) - startTime);
 }
 
 // ===========================
@@ -457,10 +442,16 @@ void revealCell(char **actualBoard, char **visibleBoard, int row, int col, int s
 // ===========================
 void placeFlag(char **visibleBoard, int row, int col, int size)
 {
-    if (visibleBoard[row][col] == HIDDEN_SYMBOL[0])
+    if (visibleBoard[row][col] == HIDDEN_SYMBOL[0] && flagsLeft > 0)
+    {
         visibleBoard[row][col] = FLAG_SYMBOL[0];
+        flagsLeft--;
+    }
     else if (visibleBoard[row][col] == FLAG_SYMBOL[0])
+    {
         visibleBoard[row][col] = HIDDEN_SYMBOL[0];
+        flagsLeft++;
+    }
 }
 
 // ===========================
@@ -542,12 +533,15 @@ void showHighScores()
         for (int j = i + 1; j < count; ++j)
             if (players[j].timeTaken < players[i].timeTaken)
                 swap(players[i], players[j]);
-
+    setColor(11);
     cout << "\nTop " << topPlayers << " players for " << difficulty << ":\n";
+    setColor(7);
+
     for (int i = 0; i < topPlayers; ++i)
         cout << players[i].name << " - Time: " << players[i].timeTaken << "s\n";
     delete[] players;
 }
+
 // ===========================
 // PLAYER STATS
 // ===========================
@@ -588,8 +582,10 @@ void showPlayerStats()
         cout << "No records found for player " << searchName << ".\n";
         return;
     }
-
+    setColor(14);
     cout << "\nStats for player " << searchName << ":\n";
+    setColor(7);
+
     cout << "Total Games Played: " << totalGames << "\n";
     cout << "Wins: " << wins << "\n";
     cout << "Losses: " << losses << "\n";
