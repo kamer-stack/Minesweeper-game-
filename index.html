@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MINESWEEPER</title>
+<style>
+  /* ══════════════════════════════════════════
+     DARK THEME (default)
+  ══════════════════════════════════════════ */
+  :root {
+    --bg: #0a0e14;
+    --bg-panel: #0e1420;
+    --grid-line: #1c2533;
+    --hidden-cell: #131a26;
+    --hidden-cell-hi: #19222f;
+    --revealed-cell: #0c1119;
+    --text-dim: #5a6b80;
+    --text-bright: #d7e3f4;
+    --accent-cyan: #2de2ff;
+    --accent-green: #39ff7a;
+    --accent-amber: #ffc857;
+    --accent-magenta: #ff4fd8;
+    --accent-red: #ff3b5c;
+    --flag-color: #ffc857;
+    --mine-color: #ff3b5c;
+    --border-glow: rgba(45, 226, 255, 0.15);
+    --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SF Mono', Consolas, monospace;
+
+    /* Dark-specific */
+    --body-bg-1: #0d1420;
+    --body-bg-2: #0a0e14;
+    --panel-bg: linear-gradient(180deg, #0e1420, #0a0f18);
+    --panel-border: #1c2533;
+    --panel-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 20px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(45,226,255,0.15);
+    --panel-radius: 10px;
+    --cell-border: none;
+    --cell-radius: 3px;
+    --input-bg: #131a26;
+    --input-border: #1c2533;
+    --btn-primary-bg: rgba(45,226,255,0.08);
+    --btn-primary-border: #2de2ff;
+    --btn-primary-color: #2de2ff;
+    --btn-primary-shadow: 0 0 22px -6px #2de2ff;
+    --btn-secondary-bg: transparent;
+    --btn-secondary-border: #1c2533;
+    --btn-secondary-color: #5a6b80;
+    --sound-bg: #131a26;
+    --sound-border: #1c2533;
+    --sound-border-hover: #2de2ff;
+    --tab-active-color: #2de2ff;
+    --tab-active-border: #2de2ff;
+    --tab-active-bg: rgba(45,226,255,0.06);
+    --mainmenu-title-color: #2de2ff;
+    --mainmenu-title-shadow: 0 0 14px rgba(45,226,255,0.3);
+    --mainmenu-rule-color: #2de2ff;
+    --stat-val-color: #2de2ff;
+    --stat-val-shadow: none;
+    --stat-box-bg: #131a26;
+    --stat-box-border: #1c2533;
+    --rank-color: #2de2ff;
+    --rank-shadow: none;
+    --hud-stat-bg: #131a26;
+    --hud-stat-border: #1c2533;
+    --hud-backdrop: none;
+    --face-bg: #131a26;
+    --face-border: #1c2533;
+    --face-border-hover: #2de2ff;
+    --pause-card-bg: #0e1420;
+    --pause-card-border: #ffc857;
+    --pause-card-shadow: 0 0 40px -8px rgba(255,200,87,0.3), 0 20px 50px -10px rgba(0,0,0,0.6);
+    --board-bg: #1c2533;
+    --board-border: none;
+    --board-padding: 3px;
+    --board-radius: 8px;
+    --hidden-hover: #19222f;
+    --reveal-pop-flash: rgba(45,226,255,0.28);
+    --reveal-pop-shadow: rgba(45,226,255,0.4);
+    --scores-list-bg: transparent;
+    --scores-list-border: #1c2533;
+    --scores-list-border-radius: 7px;
+    --help-body-bg: #131a26;
+    --help-body-border: #1c2533;
+    --backdrop: none;
+  }
+
+  /* ══════════════════════════════════════════
+     DREAM THEME
+  ══════════════════════════════════════════ */
+  :root.dream {
+    --bg: #1a0533;
+    --bg-panel: rgba(255,255,255,0.10);
+    --grid-line: rgba(255,255,255,0.18);
+    --hidden-cell: rgba(255,255,255,0.13);
+    --hidden-cell-hi: rgba(255,255,255,0.22);
+    --revealed-cell: rgba(0,0,0,0.22);
+    --text-dim: rgba(255,255,255,0.5);
+    --text-bright: #ffffff;
+    --accent-cyan: #d946ef;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-magenta: #ec4899;
+    --accent-red: #ef4444;
+    --flag-color: #f59e0b;
+    --mine-color: #ef4444;
+    --border-glow: rgba(192,132,252,0.35);
+    --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SF Mono', Consolas, monospace;
+
+    --panel-bg: rgba(255,255,255,0.08);
+    --panel-border: rgba(255,255,255,0.2);
+    --panel-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 60px -10px rgba(192,132,252,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+    --panel-radius: 16px;
+    --cell-border: 1px solid rgba(255,255,255,0.12);
+    --cell-radius: 5px;
+    --input-bg: rgba(255,255,255,0.1);
+    --input-border: rgba(255,255,255,0.2);
+    --btn-primary-bg: rgba(217,70,239,0.22);
+    --btn-primary-border: rgba(217,70,239,0.85);
+    --btn-primary-color: #f5d0fe;
+    --btn-primary-shadow: 0 0 28px -2px rgba(217,70,239,0.75), inset 0 1px 0 rgba(255,255,255,0.15);
+    --btn-secondary-bg: rgba(255,255,255,0.09);
+    --btn-secondary-border: rgba(255,255,255,0.28);
+    --btn-secondary-color: rgba(255,255,255,0.75);
+    --sound-bg: rgba(255,255,255,0.12);
+    --sound-border: rgba(255,255,255,0.25);
+    --sound-border-hover: rgba(192,132,252,0.8);
+    --tab-active-color: #e9d5ff;
+    --tab-active-border: rgba(192,132,252,0.6);
+    --tab-active-bg: rgba(192,132,252,0.15);
+    --mainmenu-title-color: #f0abfc;
+    --mainmenu-title-shadow: 0 0 20px rgba(217,70,239,0.9), 0 0 40px rgba(217,70,239,0.4);
+    --mainmenu-rule-color: #d946ef;
+    --stat-val-color: #f0abfc;
+    --stat-val-shadow: 0 0 14px #d946ef;
+    --stat-box-bg: rgba(255,255,255,0.08);
+    --stat-box-border: rgba(255,255,255,0.15);
+    --rank-color: #f0abfc;
+    --rank-shadow: 0 0 8px #d946ef;
+    --hud-stat-bg: rgba(255,255,255,0.08);
+    --hud-stat-border: rgba(255,255,255,0.18);
+    --hud-backdrop: blur(12px);
+    --face-bg: rgba(255,255,255,0.1);
+    --face-border: rgba(255,255,255,0.2);
+    --face-border-hover: rgba(192,132,252,0.7);
+    --pause-card-bg: rgba(255,255,255,0.12);
+    --pause-card-border: rgba(253,230,138,0.5);
+    --pause-card-shadow: 0 0 40px -8px rgba(253,230,138,0.3), 0 20px 50px -10px rgba(0,0,0,0.4);
+    --board-bg: rgba(255,255,255,0.1);
+    --board-border: 1px solid rgba(255,255,255,0.15);
+    --board-padding: 4px;
+    --board-radius: 10px;
+    --hidden-hover: rgba(255,255,255,0.2);
+    --reveal-pop-flash: rgba(192,132,252,0.4);
+    --reveal-pop-shadow: rgba(192,132,252,0.5);
+    --scores-list-bg: rgba(255,255,255,0.05);
+    --scores-list-border: rgba(255,255,255,0.12);
+    --scores-list-border-radius: 10px;
+    --help-body-bg: rgba(255,255,255,0.07);
+    --help-body-border: rgba(255,255,255,0.15);
+    --backdrop: blur(24px);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    color: var(--text-bright);
+    font-family: var(--mono);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 60px;
+    transition: background 0.4s ease;
+  }
+
+  /* Dark body bg */
+  body:not(.dream-body) {
+    background: radial-gradient(circle at 50% -10%, #0d1420 0%, #0a0e14 60%);
+  }
+
+  /* Dream body bg */
+  body.dream-body {
+    background:
+      radial-gradient(ellipse at 20% 20%, #6d28d9 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 0%,  #be185d 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, #4c1d95 0%, transparent 55%),
+      linear-gradient(135deg, #0f0722 0%, #1e0a3c 50%, #2d0a4e 100%);
+  }
+
+  .titlebar {
+    width: 100%;
+    max-width: 640px;
+    text-align: center;
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  .top-btns {
+    position: absolute;
+    top: -2px;
+    right: 0;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .sound-toggle, .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--sound-border);
+    background: var(--sound-bg);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, background .15s;
+    color: var(--text-bright);
+    font-family: var(--mono);
+  }
+
+  .theme-toggle {
+    width: auto;
+    padding: 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .sound-toggle:hover { border-color: var(--sound-border-hover); }
+  .theme-toggle:hover { border-color: var(--sound-border-hover); }
+
+  .titlebar h1 {
+    margin: 6px 0 0;
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--text-bright);
+    text-shadow: 0 0 18px var(--border-glow);
+  }
+
+  .titlebar h1 .blink {
+    color: var(--accent-green);
+    animation: blink 1.6s steps(2) infinite;
+  }
+
+  :root.dream .titlebar h1 {
+    text-shadow: 0 0 30px rgba(192,132,252,0.7), 0 0 60px rgba(192,132,252,0.3);
+  }
+  :root.dream .titlebar h1 .blink { color: #f9a8d4; }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .panel {
+    width: 100%;
+    max-width: 640px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+    padding: 18px;
+    transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+  }
+
+  :root.dream .panel {
+    backdrop-filter: var(--backdrop);
+    -webkit-backdrop-filter: var(--backdrop);
+  }
+
+  .menu-screen { display: flex; flex-direction: column; gap: 14px; }
+  .menu-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 11px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
+
+  .field input[type=text] {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-bright);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  :root.dream .field input[type=text] {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .field input[type=text]:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-cyan) 18%, transparent);
+  }
+
+  .diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+  .diff-card {
+    background: var(--hidden-cell);
+    border: 1px solid var(--grid-line);
+    border-radius: 10px;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-bright);
+    font-family: var(--mono);
+    transition: border-color .15s, transform .1s, box-shadow .15s, background .15s;
+  }
+  :root.dream .diff-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .diff-card:hover { transform: translateY(-2px); background: var(--hidden-cell-hi); }
+  .diff-card .name { font-size: 13px; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; }
+  .diff-card .meta { font-size: 11px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
+
+  .diff-card[data-d="easy"]:hover, .diff-card[data-d="easy"].active   { border-color: var(--accent-green);   box-shadow: 0 0 24px -4px var(--accent-green); background: color-mix(in srgb, var(--accent-green) 12%, transparent); }
+  .diff-card[data-d="medium"]:hover, .diff-card[data-d="medium"].active { border-color: var(--accent-amber);   box-shadow: 0 0 24px -4px var(--accent-amber); background: color-mix(in srgb, var(--accent-amber) 12%, transparent); }
+  .diff-card[data-d="hard"]:hover, .diff-card[data-d="hard"].active   { border-color: var(--accent-red);     box-shadow: 0 0 24px -4px var(--accent-red);   background: color-mix(in srgb, var(--accent-red) 12%, transparent); }
+  .diff-card[data-d="easy"] .name   { color: var(--accent-green);   text-shadow: 0 0 10px var(--accent-green); }
+  .diff-card[data-d="medium"] .name { color: var(--accent-amber);   text-shadow: 0 0 10px var(--accent-amber); }
+  .diff-card[data-d="hard"] .name   { color: var(--accent-red);     text-shadow: 0 0 10px var(--accent-red); }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1.5px solid var(--btn-primary-border);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    padding: 12px 18px;
+    border-radius: 9px;
+    cursor: pointer;
+    text-shadow: 0 0 14px color-mix(in srgb, var(--btn-primary-color) 60%, transparent);
+    transition: background .15s, box-shadow .15s, transform .1s, border-color .15s;
+  }
+  :root.dream .btn { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .btn:hover { background: color-mix(in srgb, var(--btn-primary-border) 35%, transparent); box-shadow: var(--btn-primary-shadow); }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary {
+    border-color: var(--btn-secondary-border);
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-color);
+    text-shadow: none;
+  }
+  .btn.secondary:hover { color: var(--text-bright); background: var(--hidden-cell-hi); box-shadow: none; border-color: color-mix(in srgb, var(--text-bright) 55%, transparent); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+
+  .menu-tabs { display: flex; gap: 6px; margin-bottom: 4px; }
+  .menu-tabs button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--grid-line);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 9px 6px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  :root.dream .menu-tabs button { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .menu-tabs button.active { color: var(--tab-active-color); border-color: var(--tab-active-border); background: var(--tab-active-bg); }
+
+  .mainmenu-header { text-align: center; }
+  .mainmenu-rule {
+    color: var(--mainmenu-rule-color);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    overflow: hidden;
+    white-space: nowrap;
+    text-shadow: 0 0 10px var(--mainmenu-rule-color);
+  }
+  .mainmenu-title {
+    font-size: 16px;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    color: var(--mainmenu-title-color);
+    margin: 6px 0;
+    text-shadow: var(--mainmenu-title-shadow);
+  }
+
+  .mainmenu-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+
+  .menu-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: var(--hidden-cell);
+    border: 1px solid var(--grid-line);
+    border-left: 4px solid var(--opt-color);
+    border-radius: 8px;
+    padding: 13px 16px;
+    cursor: pointer;
+    font-family: var(--mono);
+    transition: background .12s, transform .1s, box-shadow .15s, border-color .15s;
+  }
+  :root.dream .menu-option { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .menu-option:hover {
+    background: color-mix(in srgb, var(--opt-color) 18%, transparent);
+    border-color: var(--opt-color);
+    border-left-color: var(--opt-color);
+    transform: translateX(3px);
+    box-shadow: 0 0 28px -4px var(--opt-color), inset 0 0 20px -10px var(--opt-color);
+  }
+  .menu-option:active { transform: translateX(0); }
+  .menu-option .opt-num { color: var(--opt-color); font-weight: 700; font-size: 15px; width: 18px; text-shadow: 0 0 10px var(--opt-color); }
+  .menu-option .opt-label { color: var(--text-bright); font-size: 14px; letter-spacing: 0.04em; font-weight: 500; }
+
+  .help-body {
+    margin-top: 14px;
+    background: var(--help-body-bg);
+    border: 1px solid var(--help-body-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.85);
+  }
+  :root.dream .help-body { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .help-body p { margin: 0 0 10px; }
+  .help-body ul { margin: 0; padding-left: 18px; }
+  .help-body li { margin-bottom: 8px; color: var(--text-dim); }
+  .help-body li strong { color: var(--text-bright); }
+
+  .exit-screen { text-align: center; padding: 30px 10px; }
+  .exit-title { font-size: 13px; letter-spacing: 0.2em; color: #fca5a5; text-shadow: 0 0 14px rgba(252,165,165,0.5); }
+  .exit-message { font-size: 22px; font-weight: 700; color: var(--text-bright); margin-top: 10px; }
+
+  .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .hud-stat {
+    background: var(--hud-stat-bg);
+    border: 1px solid var(--hud-stat-border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    min-width: 92px;
+    justify-content: center;
+  }
+  :root.dream .hud-stat { backdrop-filter: var(--hud-backdrop); -webkit-backdrop-filter: var(--hud-backdrop); }
+  .hud-stat .ico { font-size: 13px; }
+  .hud-stat.timer { color: var(--accent-cyan); text-shadow: 0 0 12px var(--accent-cyan); }
+  .hud-stat.flags  { color: var(--flag-color);  text-shadow: 0 0 12px var(--flag-color); }
+  .hud-stat .label { color: var(--text-dim); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 2px; }
+
+  .face-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--face-border);
+    background: var(--face-bg);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, background .15s;
+  }
+  :root.dream .face-btn { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .face-btn:hover { border-color: var(--face-border-hover); }
+
+  .hud-mid-btns { display: flex; gap: 8px; }
+  .pause-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--face-border);
+    background: var(--face-bg);
+    color: var(--accent-amber);
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, opacity .15s;
+  }
+  :root.dream .pause-btn { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .pause-btn:hover:not(:disabled) { border-color: var(--accent-amber); }
+  .pause-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .board-wrap { display: flex; justify-content: center; position: relative; }
+  .board.paused-blur { filter: blur(7px); opacity: 0.45; pointer-events: none; }
+
+  .pause-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; }
+  .pause-card {
+    background: var(--pause-card-bg);
+    border: 1px solid var(--pause-card-border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    text-align: center;
+    box-shadow: var(--pause-card-shadow);
+    display: flex; flex-direction: column; gap: 10px;
+    min-width: 200px;
+  }
+  :root.dream .pause-card { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .pause-title { font-size: 14px; letter-spacing: 0.16em; color: var(--accent-amber); text-shadow: 0 0 12px color-mix(in srgb, var(--accent-amber) 50%, transparent); }
+  .pause-time { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+
+  .board {
+    display: grid;
+    gap: 3px;
+    background: var(--board-bg);
+    padding: var(--board-padding);
+    border-radius: var(--board-radius);
+    border: var(--board-border);
+    touch-action: manipulation;
+  }
+
+  .cell {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+    background: var(--hidden-cell);
+    border-radius: var(--cell-radius);
+    border: var(--cell-border);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background .08s;
+  }
+  .cell.hidden:hover { background: var(--hidden-hover); border-color: color-mix(in srgb, white 25%, transparent); }
+  .cell.revealed {
+    background: var(--revealed-cell);
+    cursor: default;
+    animation: reveal-pop .22s ease-out;
+  }
+  @keyframes reveal-pop {
+    0%   { transform: scale(0.7); opacity: 0.15; background: var(--reveal-pop-flash); box-shadow: 0 0 12px var(--reveal-pop-shadow); }
+    60%  { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; box-shadow: none; }
+  }
+
+  .cell.flag { background: var(--hidden-cell); }
+  .cell.flag::after { content: "⚑"; color: var(--flag-color); font-size: 16px; text-shadow: 0 0 10px var(--flag-color); }
+  .cell.mine { background: color-mix(in srgb, var(--mine-color) 18%, transparent); }
+  .cell.mine::after { content: "✸"; color: var(--mine-color); font-size: 16px; text-shadow: 0 0 12px var(--mine-color); }
+  .cell.mine.exploded { background: color-mix(in srgb, var(--mine-color) 45%, transparent); animation: boom .35s ease-out; }
+  @keyframes boom { 0% { transform: scale(1.6); } 100% { transform: scale(1); } }
+  .cell.mine-safe::after { opacity: 0.55; }
+
+  /* Number colors — same in both themes for clarity */
+  .cell.n1 { color: #38bdf8; }
+  .cell.n2 { color: #4ade80; }
+  .cell.n3 { color: #fbbf24; }
+  .cell.n4 { color: #a78bfa; }
+  .cell.n5 { color: #f472b6; }
+  .cell.n6 { color: #34d399; }
+  .cell.n7 { color: #f87171; }
+  .cell.n8 { color: #ffffff; }
+  .cell.n1,.cell.n2,.cell.n3,.cell.n4,.cell.n5,.cell.n6,.cell.n7,.cell.n8 {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    font-weight: 800;
+  }
+
+  /* Dark overrides for n1/n2 to match old dark theme */
+  :root:not(.dream) .cell.n1 { color: #2de2ff; }
+  :root:not(.dream) .cell.n2 { color: #39ff7a; }
+  :root:not(.dream) .cell.n3 { color: #ffc857; }
+  :root:not(.dream) .cell.n4 { color: #8aa3ff; }
+  :root:not(.dream) .cell.n5 { color: #ff4fd8; }
+  :root:not(.dream) .cell.n6 { color: #6ee7e7; }
+  :root:not(.dream) .cell.n7 { color: #ff3b5c; }
+
+  .status-banner {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    padding: 12px;
+    border-radius: 10px;
+    display: none;
+  }
+  :root.dream .status-banner { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .status-banner.show { display: block; }
+  .status-banner.win  { color: #4ade80; border: 1.5px solid #22c55e; background: rgba(34,197,94,0.15); text-shadow: 0 0 14px #22c55e; }
+  .status-banner.lose { color: #f87171; border: 1.5px solid #ef4444; background: rgba(239,68,68,0.15); text-shadow: 0 0 14px #ef4444; }
+
+  .post-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: center; flex-wrap: wrap; }
+  .hint { text-align: center; color: var(--text-dim); font-size: 11px; margin-top: 12px; letter-spacing: 0.04em; }
+
+  .list-row { display: flex; justify-content: space-between; padding: 9px 10px; border-bottom: 1px solid var(--grid-line); font-size: 13px; }
+  .list-row:last-child { border-bottom: none; }
+  .list-row .rank  { color: var(--rank-color); width: 28px; text-shadow: var(--rank-shadow); }
+  .list-row .name  { flex: 1; color: var(--text-bright); }
+  .list-row .time  { color: var(--text-dim); }
+
+  .empty-state { text-align: center; color: var(--text-dim); font-size: 13px; padding: 24px 8px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 10px; }
+  .stat-box {
+    background: var(--stat-box-bg);
+    border: 1px solid var(--stat-box-border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  :root.dream .stat-box { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .stat-box .val { font-size: 20px; font-weight: 700; color: var(--stat-val-color); text-shadow: var(--stat-val-shadow); }
+  .stat-box .lbl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .back-row { margin-top: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cell.revealed, .cell.mine.exploded { animation: none; }
+    .titlebar h1 .blink { animation: none; }
+  }
+  @media (max-width: 420px) {
+    .cell { width: 28px; height: 28px; font-size: 13px; }
+    .diff-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="titlebar">
+  <div class="top-btns">
+    <button class="theme-toggle" id="themeBtn" title="Switch theme">🌑 DARK</button>
+    <button class="sound-toggle" id="soundBtn" title="Toggle sound">🔊</button>
+  </div>
+  <h1>MINESWEEPER<span class="blink">_</span></h1>
+</div>
+<div class="panel" id="panel"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const DIFFICULTIES = {
+    easy:   { name: "Easy",   size: 6,  pct: 15 },
+    medium: { name: "Medium", size: 8,  pct: 18 },
+    hard:   { name: "Hard",   size: 12, pct: 20 }
+  };
+  function bombCount(size, pct){ return Math.floor((size*size) * pct / 100); }
+
+  let state = {
+    screen: "mainmenu",
+    playerName: "",
+    difficulty: "easy",
+    board: null,
+    visible: null,
+    size: 0,
+    mines: 0,
+    flagsLeft: 0,
+    firstClickDone: false,
+    timerStart: null,
+    timerInterval: null,
+    elapsed: 0,
+    gameOver: false,
+    won: false,
+    revealedCount: 0,
+    animating: false,
+    paused: false,
+    soundOn: true,
+    scoresFilter: 'easy',
+    theme: 'dark'
+  };
+
+  let scoreLog = [];
+  const panel = document.getElementById('panel');
+
+  // ── Theme ─────────────────────────────────────────
+  function applyTheme(t){
+    state.theme = t;
+    const html = document.documentElement;
+    const body = document.body;
+    if (t === 'dream'){
+      html.classList.add('dream');
+      body.classList.add('dream-body');
+    } else {
+      html.classList.remove('dream');
+      body.classList.remove('dream-body');
+    }
+    const btn = document.getElementById('themeBtn');
+    if (btn) btn.textContent = t === 'dream' ? '🌸 DREAM' : '🌑 DARK';
+  }
+
+  function toggleTheme(){
+    applyTheme(state.theme === 'dark' ? 'dream' : 'dark');
+  }
+
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+
+  // ── Render router ──────────────────────────────────
+  function render(){
+    if (state.screen === "mainmenu")   renderMainMenu();
+    else if (state.screen === "nameEntry")  renderNameEntry();
+    else if (state.screen === "difficulty") renderDifficulty();
+    else if (state.screen === "game")       renderGame();
+    else if (state.screen === "scores")     renderScores();
+    else if (state.screen === "stats")      renderStats();
+    else if (state.screen === "help")       renderHelp();
+    else if (state.screen === "exit")       renderExit();
+    wireUiSounds();
+    // keep theme btn label in sync after any render
+    const btn = document.getElementById('themeBtn');
+    if (btn) btn.textContent = state.theme === 'dream' ? '🌸 DREAM' : '🌑 DARK';
+  }
+
+  const MENU_OPTIONS = [
+    { num:1, label:"Play Game",        screen:"playEntry", color:"var(--accent-amber)" },
+    { num:2, label:"View High Scores", screen:"scores",    color:"var(--accent-green)" },
+    { num:3, label:"Player Stats",     screen:"stats",     color:"var(--accent-magenta)" },
+    { num:4, label:"Help",             screen:"help",      color:"var(--accent-cyan)" },
+    { num:5, label:"Exit",             screen:"exit",      color:"var(--accent-red)" }
+  ];
+
+  function renderMainMenu(){
+    panel.innerHTML = `
+      <div class="mainmenu-header">
+        <div class="mainmenu-rule">═════════════════════════</div>
+        <div class="mainmenu-title">MINESWEEPER MENU</div>
+        <div class="mainmenu-rule">═════════════════════════</div>
+      </div>
+      <div class="mainmenu-list">
+        ${MENU_OPTIONS.map(opt=>`
+          <button class="menu-option" data-screen="${opt.screen}" style="--opt-color:${opt.color};">
+            <span class="opt-num">${opt.num}.</span>
+            <span class="opt-label">${opt.label}</span>
+          </button>
+        `).join('')}
+      </div>
+      ${state.playerName?`<div class="hint" style="margin-top:16px;">Playing as <strong style="color:var(--accent-cyan);">${escapeHtml(state.playerName)}</strong></div>`:''}
+    `;
+    panel.querySelectorAll('.menu-option').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const target = b.getAttribute('data-screen');
+        if (target==='playEntry') goToPlayEntry();
+        else { state.screen=target; render(); }
+      });
+    });
+  }
+
+  function goToPlayEntry(){
+    if (!state.playerName){ state.screen='nameEntry'; render(); }
+    else { state.screen='difficulty'; render(); }
+  }
+
+  function renderNameEntry(){
+    panel.innerHTML = `
+      <div class="mainmenu-header"><div class="mainmenu-title">ENTER YOUR NAME</div></div>
+      <div class="field" style="margin-top:14px;">
+        <label>Operator name</label>
+        <input type="text" id="nameInput" maxlength="16" placeholder="Enter your name" autofocus>
+      </div>
+      <button class="btn" id="confirmNameBtn" style="margin-top:14px;">Continue</button>
+      <div class="back-row"><button class="btn secondary" id="backBtn">← Back to Menu</button></div>
+    `;
+    const input = document.getElementById('nameInput');
+    const confirm = ()=>{
+      const v = input.value.trim();
+      state.playerName = v||"Player";
+      state.screen='difficulty'; render();
+    };
+    document.getElementById('confirmNameBtn').addEventListener('click', confirm);
+    input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') confirm(); });
+    document.getElementById('backBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+  }
+
+  function renderDifficulty(){
+    panel.innerHTML = `
+      <div class="mainmenu-header"><div class="mainmenu-title">SELECT DIFFICULTY</div></div>
+      <div class="field" style="margin-top:14px;">
+        <div class="diff-grid">
+          ${Object.entries(DIFFICULTIES).map(([key,d])=>`
+            <button class="diff-card ${state.difficulty===key?'active':''}" data-d="${key}" data-key="${key}">
+              <div class="name">${d.name}</div>
+              <div class="meta">${d.size}×${d.size} grid<br>${bombCount(d.size,d.pct)} mines</div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <button class="btn" id="startBtn" style="margin-top:14px;">▶ Start Game</button>
+      <div class="back-row"><button class="btn secondary" id="backBtn">← Back to Menu</button></div>
+    `;
+    panel.querySelectorAll('.diff-card').forEach(c=>{
+      c.addEventListener('click',()=>{ state.difficulty=c.getAttribute('data-key'); render(); });
+    });
+    document.getElementById('startBtn').addEventListener('click',()=> startGame(state.difficulty));
+    document.getElementById('backBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+  }
+
+  function renderHelp(){
+    panel.innerHTML = `
+      <div class="mainmenu-header"><div class="mainmenu-title">HOW TO PLAY</div></div>
+      <div class="help-body">
+        <p><strong>Goal:</strong> reveal every cell that isn't a mine.</p>
+        <ul>
+          <li><strong>Click</strong> a cell to reveal it.</li>
+          <li><strong>Right-click</strong> a cell to flag or unflag it. On touch, <strong>press and hold</strong> instead.</li>
+          <li>Numbers show how many mines are touching that cell.</li>
+          <li>Your first click is always safe — mines are placed after it.</li>
+          <li>Avoid the mines. Flag the ones you're sure about to keep track.</li>
+        </ul>
+      </div>
+      <div class="back-row"><button class="btn secondary" id="backBtn">← Back to Menu</button></div>
+    `;
+    document.getElementById('backBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+  }
+
+  function renderExit(){
+    panel.innerHTML = `
+      <div class="exit-screen">
+        <div class="exit-title">EXITING THE GAME</div>
+        <div class="exit-message">Goodbye!</div>
+        <button class="btn" id="returnBtn" style="margin-top:18px;">↺ Return to Menu</button>
+      </div>
+    `;
+    document.getElementById('returnBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+  }
+
+  function startGame(diffKey){
+    const d = DIFFICULTIES[diffKey];
+    const size = d.size;
+    const mines = bombCount(size, d.pct);
+    state.size = size; state.mines = mines; state.flagsLeft = mines;
+    state.board = Array.from({length:size},()=> Array(size).fill('empty'));
+    state.visible = Array.from({length:size},()=> Array(size).fill('hidden'));
+    state.firstClickDone = false; state.gameOver = false; state.won = false;
+    state.revealedCount = 0; state.elapsed = 0; state.animating = false;
+    state.paused = false; state.difficulty = diffKey;
+    clearTimerInterval();
+    state.screen = "game"; render();
+  }
+
+  function placeBombs(safeRow, safeCol){
+    let placed = 0;
+    const size = state.size;
+    while (placed < state.mines){
+      const row = Math.floor(Math.random()*size);
+      const col = Math.floor(Math.random()*size);
+      if ((row===safeRow&&col===safeCol)||state.board[row][col]==='mine') continue;
+      state.board[row][col] = 'mine'; placed++;
+    }
+  }
+
+  function countNeighborMines(row,col){
+    let c=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      const nr=row+dr,nc=col+dc;
+      if(nr>=0&&nc>=0&&nr<state.size&&nc<state.size&&state.board[nr][nc]==='mine') c++;
+    }
+    return c;
+  }
+
+  function collectFloodFill(startRow,startCol){
+    const claimed = Array.from({length:state.size},()=>Array(state.size).fill(false));
+    const out = []; let frontier = [[startRow,startCol]]; claimed[startRow][startCol]=true; let wave=0;
+    while(frontier.length){
+      const nextFrontier=[];
+      for(const [row,col] of frontier){
+        if(state.visible[row][col]!=='hidden') continue;
+        const n=countNeighborMines(row,col);
+        const value=(n===0)?'empty':String(n);
+        out.push({row,col,value,wave});
+        if(n===0) for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+          if(dr===0&&dc===0) continue;
+          const nr=row+dr,nc=col+dc;
+          if(nr<0||nc<0||nr>=state.size||nc>=state.size) continue;
+          if(claimed[nr][nc]||state.visible[nr][nc]!=='hidden') continue;
+          claimed[nr][nc]=true; nextFrontier.push([nr,nc]);
+        }
+      }
+      frontier=nextFrontier; wave++;
+    }
+    return out;
+  }
+
+  function animateFloodFill(cells,onDone){
+    if(cells.length===0){ onDone(); return; }
+    const WAVE_DELAY_MS=55;
+    if(cells.length===1&&cells[0].wave===0){
+      const {row,col,value}=cells[0];
+      state.visible[row][col]=value; state.revealedCount++;
+      paintCell(row,col); onDone(); return;
+    }
+    let landed=0;
+    for(const cellData of cells){
+      const delay=cellData.wave*WAVE_DELAY_MS;
+      setTimeout(()=>{
+        state.visible[cellData.row][cellData.col]=cellData.value;
+        state.revealedCount++; paintCell(cellData.row,cellData.col); landed++;
+        if(landed===cells.length) onDone();
+      }, delay);
+    }
+  }
+
+  function checkWin(){ return state.revealedCount===(state.size*state.size-state.mines); }
+
+  function handleReveal(row,col){
+    if(state.gameOver||state.animating||state.paused) return;
+    if(state.visible[row][col]==='flag'||state.visible[row][col]!=='hidden') return;
+    if(!state.firstClickDone){
+      placeBombs(row,col); state.firstClickDone=true;
+      state.timerStart=Date.now();
+      state.timerInterval=setInterval(()=>{ state.elapsed=Math.floor((Date.now()-state.timerStart)/1000); updateHud(); },1000);
+    }
+    if(state.board[row][col]==='mine'){
+      state.gameOver=true; state.won=false;
+      revealAllMines(row,col); finishGame(); renderBoardOnly(); showBanner(false); playSfx('lose'); return;
+    }
+    playSfx('reveal');
+    const cells=collectFloodFill(row,col);
+    state.animating=true;
+    animateFloodFill(cells,()=>{
+      state.animating=false;
+      if(checkWin()){ state.gameOver=true; state.won=true; finishGame(); showBanner(true); playSfx('win'); }
+    });
+  }
+
+  function revealAllMines(triggerRow,triggerCol){
+    for(let r=0;r<state.size;r++) for(let c=0;c<state.size;c++){
+      if(state.board[r][c]==='mine'&&state.visible[r][c]!=='flag')
+        state.visible[r][c]=(r===triggerRow&&c===triggerCol)?'mine-exploded':'mine-revealed';
+    }
+  }
+
+  function handleFlag(row,col){
+    if(state.gameOver||state.animating||state.paused) return;
+    if(state.visible[row][col]==='hidden'&&state.flagsLeft>0){
+      state.visible[row][col]='flag'; state.flagsLeft--; playSfx('flag');
+    } else if(state.visible[row][col]==='flag'){
+      state.visible[row][col]='hidden'; state.flagsLeft++; playSfx('unflag');
+    }
+    renderBoardOnly(); updateHud();
+  }
+
+  function clearTimerInterval(){
+    if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval=null; }
+  }
+
+  function pauseGame(){
+    if(state.gameOver||state.paused||state.animating) return;
+    state.paused=true; clearTimerInterval(); renderGame();
+  }
+
+  function resumeGame(){
+    if(!state.paused) return;
+    state.paused=false;
+    if(state.firstClickDone){
+      state.timerStart=Date.now()-state.elapsed*1000;
+      state.timerInterval=setInterval(()=>{ state.elapsed=Math.floor((Date.now()-state.timerStart)/1000); updateHud(); },1000);
+    }
+    renderGame();
+  }
+
+  function finishGame(){
+    clearTimerInterval();
+    const d=DIFFICULTIES[state.difficulty];
+    scoreLog.push({ name:state.playerName, difficulty:d.name, time:state.elapsed, result:state.won?"Win":"Loss" });
+  }
+
+  function renderGame(){
+    const d=DIFFICULTIES[state.difficulty];
+    panel.innerHTML=`
+      <div class="hud">
+        <div class="hud-stat timer"><span class="ico">⏱</span><span class="label">Time</span><span id="timerVal">${state.elapsed}s</span></div>
+        <div class="hud-mid-btns">
+          <button class="face-btn" id="faceBtn" title="Restart">${state.gameOver?(state.won?'😎':'💀'):'🙂'}</button>
+          <button class="pause-btn" id="pauseBtn" title="${state.paused?'Resume':'Pause'}" ${(state.gameOver||state.animating)?'disabled':''}>${state.paused?'▶':'⏸'}</button>
+        </div>
+        <div class="hud-stat flags"><span class="ico">⚑</span><span class="label">Flags</span><span id="flagsVal">${state.flagsLeft}/${state.mines}</span></div>
+      </div>
+      <div class="board-wrap">
+        <div class="board ${state.paused?'paused-blur':''}" id="boardEl" style="grid-template-columns:repeat(${state.size},34px);"></div>
+        ${state.paused?`
+          <div class="pause-overlay"><div class="pause-card">
+            <div class="pause-title">GAME PAUSED</div>
+            <div class="pause-time">Time held at ${state.elapsed}s</div>
+            <button class="btn" id="resumeBtn">▶ Resume</button>
+            <button class="btn secondary" id="restartFromPauseBtn">↺ Restart</button>
+            <button class="btn secondary" id="menuFromPauseBtn">Main Menu</button>
+          </div></div>
+        `:''}
+      </div>
+      <div class="status-banner" id="banner"></div>
+      <div class="post-actions" id="postActions" style="display:none;">
+        <button class="btn" id="playAgainBtn">Play Again</button>
+        <button class="btn secondary" id="backMenuBtn">Main Menu</button>
+      </div>
+      <div class="hint" id="hintLine">Left click: reveal &nbsp;·&nbsp; Right click: flag &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>
+    `;
+    document.getElementById('faceBtn').addEventListener('click',()=> startGame(state.difficulty));
+    document.getElementById('pauseBtn').addEventListener('click',()=>{ state.paused?resumeGame():pauseGame(); });
+    document.getElementById('playAgainBtn').addEventListener('click',()=> startGame(state.difficulty));
+    document.getElementById('backMenuBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+    if(state.paused){
+      document.getElementById('resumeBtn').addEventListener('click', resumeGame);
+      document.getElementById('restartFromPauseBtn').addEventListener('click',()=> startGame(state.difficulty));
+      document.getElementById('menuFromPauseBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+    }
+    buildBoardCells(); renderBoardOnly();
+  }
+
+  function buildBoardCells(){
+    const boardEl=document.getElementById('boardEl'); boardEl.innerHTML='';
+    for(let r=0;r<state.size;r++) for(let c=0;c<state.size;c++){
+      const cell=document.createElement('div');
+      cell.className='cell hidden'; cell.dataset.row=r; cell.dataset.col=c;
+      cell.addEventListener('click',()=> handleReveal(r,c));
+      cell.addEventListener('contextmenu',(e)=>{ e.preventDefault(); handleFlag(r,c); });
+      let pressTimer=null;
+      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(()=> handleFlag(r,c),450); },{passive:true});
+      cell.addEventListener('touchend',()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      cell.addEventListener('touchmove',()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      boardEl.appendChild(cell);
+    }
+  }
+
+  function styleCellEl(cell,v){
+    cell.className='cell'; cell.textContent='';
+    if(v==='hidden') cell.classList.add('hidden');
+    else if(v==='flag') cell.classList.add('hidden','flag');
+    else if(v==='mine-exploded') cell.classList.add('revealed','mine','exploded');
+    else if(v==='mine-revealed') cell.classList.add('revealed','mine','mine-safe');
+    else if(v==='empty') cell.classList.add('revealed');
+    else { cell.classList.add('revealed','n'+v); cell.textContent=v; }
+  }
+
+  function paintCell(row,col){
+    const boardEl=document.getElementById('boardEl'); if(!boardEl) return;
+    const cell=boardEl.children[row*state.size+col]; if(!cell) return;
+    styleCellEl(cell, state.visible[row][col]); updateHud();
+  }
+
+  function renderBoardOnly(){
+    const boardEl=document.getElementById('boardEl'); if(!boardEl) return;
+    for(let r=0;r<state.size;r++) for(let c=0;c<state.size;c++)
+      styleCellEl(boardEl.children[r*state.size+c], state.visible[r][c]);
+    updateHud();
+  }
+
+  function updateHud(){
+    const t=document.getElementById('timerVal'), f=document.getElementById('flagsVal');
+    if(t) t.textContent=state.elapsed+'s';
+    if(f) f.textContent=state.flagsLeft+'/'+state.mines;
+    const face=document.getElementById('faceBtn');
+    if(face) face.textContent=state.gameOver?(state.won?'😎':'💀'):'🙂';
+    const pauseBtn=document.getElementById('pauseBtn');
+    if(pauseBtn){ pauseBtn.disabled=state.gameOver||state.animating; pauseBtn.textContent=state.paused?'▶':'⏸'; }
+  }
+
+  function showBanner(won){
+    const banner=document.getElementById('banner'), post=document.getElementById('postActions');
+    if(!banner) return;
+    banner.className='status-banner show '+(won?'win':'lose');
+    banner.textContent=won?`MINEFIELD CLEARED — ${state.elapsed}s`:`BOOM — MINE TRIGGERED`;
+    if(post) post.style.display='flex';
+  }
+
+  function renderScores(){
+    panel.innerHTML=`
+      <div class="mainmenu-header"><div class="mainmenu-title">HIGH SCORES</div></div>
+      <div class="field" style="margin-top:14px;">
+        <label>Filter by difficulty</label>
+        <div class="diff-grid">
+          ${Object.entries(DIFFICULTIES).map(([key,d])=>`
+            <button class="diff-card ${(state.scoresFilter||'easy')===key?'active':''}" data-key="${key}" data-d="${key}">
+              <div class="name">${d.name}</div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div id="scoresList" style="margin-top:12px; border:1px solid var(--scores-list-border); border-radius:var(--scores-list-border-radius); overflow:hidden; background:var(--scores-list-bg);"></div>
+      <div class="back-row"><button class="btn secondary" id="backBtn">← Back to Menu</button></div>
+    `;
+    panel.querySelectorAll('.diff-grid .diff-card').forEach(c=>{
+      c.addEventListener('click',()=>{ state.scoresFilter=c.getAttribute('data-key'); render(); });
+    });
+    document.getElementById('backBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+    const filterKey=state.scoresFilter||'easy';
+    const filterName=DIFFICULTIES[filterKey].name;
+    const winners=scoreLog.filter(s=>s.difficulty===filterName&&s.result==='Win').slice().sort((a,b)=>a.time-b.time);
+    const list=document.getElementById('scoresList');
+    if(winners.length===0){
+      list.innerHTML=`<div class="empty-state">No winners yet for ${filterName}. Be the first!</div>`;
+    } else {
+      list.innerHTML=winners.slice(0,10).map((s,i)=>`
+        <div class="list-row">
+          <span class="rank">#${i+1}</span>
+          <span class="name">${escapeHtml(s.name)}</span>
+          <span class="time">${s.time}s</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function renderStats(){
+    panel.innerHTML=`
+      <div class="mainmenu-header"><div class="mainmenu-title">PLAYER STATS</div></div>
+      <div class="field" style="margin-top:14px;">
+        <label>Operator name</label>
+        <input type="text" id="statsNameInput" placeholder="Enter name to look up" value="${escapeHtml(state.playerName)}">
+      </div>
+      <button class="btn" id="lookupBtn" style="margin-top:10px;">Look Up Stats</button>
+      <div id="statsResult" style="margin-top:14px;"></div>
+      <div class="back-row"><button class="btn secondary" id="backBtn">← Back to Menu</button></div>
+    `;
+    document.getElementById('backBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+    document.getElementById('lookupBtn').addEventListener('click', doLookup);
+    document.getElementById('statsNameInput').addEventListener('keydown',(e)=>{ if(e.key==='Enter') doLookup(); });
+    function doLookup(){
+      const name=document.getElementById('statsNameInput').value.trim().toLowerCase();
+      const resultEl=document.getElementById('statsResult');
+      if(!name){ resultEl.innerHTML=`<div class="empty-state">Enter a name to look up.</div>`; return; }
+      const records=scoreLog.filter(s=>s.name.toLowerCase()===name);
+      if(records.length===0){ resultEl.innerHTML=`<div class="empty-state">No records found for "${escapeHtml(name)}".</div>`; return; }
+      const totalGames=records.length, wins=records.filter(r=>r.result==='Win').length;
+      const losses=totalGames-wins, avgTime=Math.round(records.reduce((s,r)=>s+r.time,0)/totalGames);
+      resultEl.innerHTML=`
+        <div class="stat-grid">
+          <div class="stat-box"><div class="val">${totalGames}</div><div class="lbl">Games Played</div></div>
+          <div class="stat-box"><div class="val">${wins}</div><div class="lbl">Wins</div></div>
+          <div class="stat-box"><div class="val">${losses}</div><div class="lbl">Losses</div></div>
+          <div class="stat-box"><div class="val">${avgTime}s</div><div class="lbl">Avg Time</div></div>
+        </div>
+      `;
+    }
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ── Sound Engine ───────────────────────────────────
+  let audioCtx=null;
+  function getAudioCtx(){
+    if(!audioCtx){ const AC=window.AudioContext||window.webkitAudioContext; audioCtx=new AC(); }
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function tone(freq,durationMs,{type='sine',startGain=0.18,delayMs=0,glideTo=null}={}){
+    if(!state.soundOn) return;
+    const ctx=getAudioCtx();
+    const t0=ctx.currentTime+delayMs/1000;
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.type=type; osc.frequency.setValueAtTime(freq,t0);
+    if(glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo,t0+durationMs/1000);
+    gain.gain.setValueAtTime(startGain,t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t0+durationMs/1000);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(t0); osc.stop(t0+durationMs/1000+0.02);
+  }
+
+  const SFX = {
+    reveal: ()=> tone(880,70,{type:'square',startGain:0.06}),
+    flag:   ()=> tone(520,90,{type:'triangle',startGain:0.12}),
+    unflag: ()=> tone(340,90,{type:'triangle',startGain:0.10}),
+    win: ()=>{ [523,659,784,1047].forEach((f,i)=> tone(f,160,{type:'sine',startGain:0.16,delayMs:i*90})); },
+    lose: ()=>{ tone(180,320,{type:'sawtooth',startGain:0.22,glideTo:40}); },
+    hover: ()=> tone(1200,35,{type:'sine',startGain:0.035}),
+    click: ()=> tone(700,60,{type:'square',startGain:0.09}),
+  };
+
+  function playSfx(name){ try{ SFX[name](); } catch(e){} }
+
+  function wireUiSounds(){
+    panel.querySelectorAll('button:not(.cell)').forEach(btn=>{
+      btn.addEventListener('mouseenter',()=> playSfx('hover'));
+      btn.addEventListener('click',()=> playSfx('click'));
+    });
+  }
+
+  function toggleSound(){
+    state.soundOn=!state.soundOn;
+    if(state.soundOn) getAudioCtx();
+    updateSoundBtn();
+  }
+
+  function updateSoundBtn(){
+    const btn=document.getElementById('soundBtn');
+    if(btn) btn.textContent=state.soundOn?'🔊':'🔇';
+  }
+
+  document.getElementById('soundBtn').addEventListener('click', toggleSound);
+  updateSoundBtn();
+  render();
+})();
+</script>
+</body>
+</html>
