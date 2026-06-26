@@ -1,28 +1,33 @@
-# 💣 Minesweeper
+# Minesweeper
 
-A fully-featured Minesweeper built from scratch — starting as a C++ terminal game, now upgraded to a complete web version with dual themes, sound effects, animations, and a live leaderboard.
+[![Play Live](https://img.shields.io/badge/Play%20Live-Enjoy-brightgreen)](https://kamer-stack.github.io/Minesweeper-game-/)
+[![Language](https://img.shields.io/badge/Language-C%2B%2B%20%7C%20JavaScript-blue)]()
+[![License](https://img.shields.io/badge/License-MIT-pink)]()
 
-🎮 **[Play it live →](https://kamer-stack.github.io/Minesweeper-game-/)**
+A classic Minesweeper game built from scratch — started as a C++ terminal application, now a fully-featured browser game with dual themes, sound effects, animations, and a live leaderboard.
+
+**[Play it live →](https://kamer-stack.github.io/Minesweeper-game-/)**
 
 ---
 
-## 🌐 Web Version (New!)
+## Web Version
 
-Built with vanilla HTML/CSS/JS — no frameworks, no dependencies. Just open and play.
+Built with vanilla HTML, CSS, and JavaScript. No frameworks, no dependencies — just open and play.
 
 | Feature | Details |
 |---|---|
-| 🎨 **Dual Themes** | Switch between **DARK** (cyber/neon) and **DREAM** (glassmorphism/purple) |
-| 🔊 **Sound Engine** | Web Audio API — reveal, flag, win, lose, hover sounds |
-| ⏱ **Timer** | Live game timer with pause support |
-| ⚑ **Flagging** | Right-click or press-and-hold on touch |
-| 🏆 **High Scores** | Top 10 per difficulty, sorted by time |
-| 📊 **Player Stats** | Wins, losses, games played, average time |
-| 💥 **Animations** | Wave flood-fill reveal, explosion effect |
-| 📱 **Touch Support** | Fully playable on mobile |
-| 🔒 **Safe First Click** | Mines place after your first click — never die immediately |
+| Dual Themes | Switch between DARK (cyber/neon) and DREAM (glassmorphism/purple) at any time |
+| Sound Engine | Web Audio API — reveal, flag, win, lose, hover, and click sounds |
+| Timer & Pause | Live game timer with full pause and resume support |
+| Flagging | Right-click on desktop, press-and-hold on mobile |
+| High Scores | Top 10 leaderboard per difficulty, sorted by completion time |
+| Player Stats | Wins, losses, games played, and average time per player |
+| Animations | Wave flood-fill reveal and mine explosion effects |
+| Mobile Support | Fully playable on touch devices |
+| Safe First Click | Mines place after your first click — you never lose immediately |
 
 ### Difficulty Levels
+
 | Level | Grid | Mines |
 |---|---|---|
 | Easy | 6×6 | 5 |
@@ -31,21 +36,23 @@ Built with vanilla HTML/CSS/JS — no frameworks, no dependencies. Just open and
 
 ---
 
-## 💻 C++ Terminal Version (Original)
+## C++ Terminal Version
 
-Classic Minesweeper built from scratch in C++ with full logic-based gameplay and a clean console interface.
+The original version — a complete Minesweeper implementation in the console, built entirely in C++ with no external libraries.
 
 ### Features
-- Interactive console menu — Play, High Scores, Player Stats, Help, Exit
-- Multiple difficulty levels with dynamic board sizes
-- Flagging system with limited flags
-- Timer and player stats tracking
-- High score system saved to file
-- Colored console output for numbers, flags, bombs
-- Recursive reveal algorithm — auto-expands empty cells
-- File handling for persistent scores and stats
+
+- Interactive console menu: Play, High Scores, Player Stats, Help, Exit
+- Three difficulty levels with dynamic board sizes and mine counts
+- Flagging system with limited flags per game
+- Live timer and per-player stats tracking
+- High score system saved to file, top players listed per difficulty
+- Colored console output for numbers, flags, and mines
+- Recursive reveal algorithm — auto-expands empty regions
+- Persistent scores and stats via file I/O
 
 ### How to Run
+
 ```bash
 git clone https://github.com/kamer-stack/Minesweeper-game-.git
 cd Minesweeper-game-
@@ -55,23 +62,38 @@ g++ minesweeper.cpp -o minesweeper
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
-| Version | Tech |
+| Version | Technologies |
 |---|---|
-| Web | HTML5, CSS3 (CSS Variables, Glassmorphism, Animations), Vanilla JS, Web Audio API |
-| Terminal | C++, File I/O, ANSI Colors, Recursive Algorithms |
+| Web | HTML5, CSS3 (Variables, Glassmorphism, Animations), Vanilla JS, Web Audio API |
+| Terminal | C++, ANSI escape codes, File I/O, Recursive algorithms |
+
+## Project Structure
+
+```
+Minesweeper-game-/
+├── index.html        Web version — open in any browser to play
+├── minesweeper.cpp   Original C++ terminal version
+└── README.md
+```
 
 ---
 
-## 📁 Project Structure
-Minesweeper-game-/
+## Contributing
 
-├── index.html        ← Web version (play in browser)
+Found a bug or have an idea? Feel free to open an issue or submit a pull request. All contributions are welcome.
 
-├── minesweeper.cpp   ← Original C++ terminal version
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/your-idea`
+3. Commit your changes: `git commit -m "Add your feature"`
+4. Push and open a pull request
 
-└── README.md
+---
+
+If you like this project, consider giving it a star — it helps more people find it and keeps the motivation going.
+
+[![Star this repo](https://img.shields.io/github/stars/kamer-stack/Minesweeper-game-?style=social)](https://github.com/kamer-stack/Minesweeper-game-)
 
 ---
 
