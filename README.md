@@ -6,7 +6,7 @@
 
 A classic Minesweeper game built from scratch — started as a C++ terminal application, now a fully-featured browser game with dual themes, sound effects, animations, and a live leaderboard.
 
-**[Play it live →](https://kamer-stack.github.io/Minesweeper-game-/)**
+**[Play it live →](https://kamer-heap.github.io/Minesweeper-game-/)**
 
 ---
 
