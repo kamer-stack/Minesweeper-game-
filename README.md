@@ -1,30 +1,78 @@
-# Minesweeper Game:
-Classic Minesweeper built from scratch in C++ with logic-based gameplay, customizable difficulty, and a clean interface.
+# 💣 Minesweeper
 
-## Features:
-- Console-based Minesweeper in C++
-- Multiple difficulty levels
-- Numbers give hints to locate mine.
+A fully-featured Minesweeper built from scratch — starting as a C++ terminal game, now upgraded to a complete web version with dual themes, sound effects, animations, and a live leaderboard.
 
-## Highlights:
-• Interactive Console Menu (Play, High Scores, Player Stats, Help, Exit)
+🎮 **[Play it live →](https://kamer-stack.github.io/Minesweeper-game-/)**
 
-• Multiple Difficulty Levels (Easy, Medium, Hard with dynamic board sizes & bomb counts)
+---
 
-• Flagging System (mark/unmark suspected bombs with limited flags)
+## 🌐 Web Version (New!)
 
-•Timer & Player Stats Tracking (time taken, wins/losses, average performance)
+Built with vanilla HTML/CSS/JS — no frameworks, no dependencies. Just open and play.
 
-• High Score System (stores results in a file and displays top players by difficulty)
+| Feature | Details |
+|---|---|
+| 🎨 **Dual Themes** | Switch between **DARK** (cyber/neon) and **DREAM** (glassmorphism/purple) |
+| 🔊 **Sound Engine** | Web Audio API — reveal, flag, win, lose, hover sounds |
+| ⏱ **Timer** | Live game timer with pause support |
+| ⚑ **Flagging** | Right-click or press-and-hold on touch |
+| 🏆 **High Scores** | Top 10 per difficulty, sorted by time |
+| 📊 **Player Stats** | Wins, losses, games played, average time |
+| 💥 **Animations** | Wave flood-fill reveal, explosion effect |
+| 📱 **Touch Support** | Fully playable on mobile |
+| 🔒 **Safe First Click** | Mines place after your first click — never die immediately |
 
-• Colored Console Output (different colors for numbers, flags, bombs, etc.)
+### Difficulty Levels
+| Level | Grid | Mines |
+|---|---|---|
+| Easy | 6×6 | 5 |
+| Medium | 8×8 | 11 |
+| Hard | 12×12 | 28 |
 
-• Recursive Reveal Algorithm (auto-expands empty cells like real Minesweeper)
+---
 
-•File Handling (save/load high scores and player stats)
+## 💻 C++ Terminal Version (Original)
 
-## How to Run:
-1. Clone or download the repository.
-2. Compile the code:
- ```bash
-g++ minesweeper.cpp -o  minesweeper./minesweeper
+Classic Minesweeper built from scratch in C++ with full logic-based gameplay and a clean console interface.
+
+### Features
+- Interactive console menu — Play, High Scores, Player Stats, Help, Exit
+- Multiple difficulty levels with dynamic board sizes
+- Flagging system with limited flags
+- Timer and player stats tracking
+- High score system saved to file
+- Colored console output for numbers, flags, bombs
+- Recursive reveal algorithm — auto-expands empty cells
+- File handling for persistent scores and stats
+
+### How to Run
+```bash
+git clone https://github.com/kamer-stack/Minesweeper-game-.git
+cd Minesweeper-game-
+g++ minesweeper.cpp -o minesweeper
+./minesweeper
+```
+
+---
+
+## 🛠 Tech Stack
+
+| Version | Tech |
+|---|---|
+| Web | HTML5, CSS3 (CSS Variables, Glassmorphism, Animations), Vanilla JS, Web Audio API |
+| Terminal | C++, File I/O, ANSI Colors, Recursive Algorithms |
+
+---
+
+## 📁 Project Structure
+Minesweeper-game-/
+
+├── index.html        ← Web version (play in browser)
+
+├── minesweeper.cpp   ← Original C++ terminal version
+
+└── README.md
+
+---
+
+Made by [kamer-stack](https://github.com/kamer-stack)
