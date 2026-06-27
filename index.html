@@ -577,6 +577,9 @@
 
   .post-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: center; flex-wrap: wrap; }
   .hint { text-align: center; color: var(--text-dim); font-size: 11px; margin-top: 12px; letter-spacing: 0.04em; }
+  /* Note: which hint line (touch vs mouse) is shown is decided in JS (state.isTouchDevice)
+     at render time, so only one hint <div> ever exists in the DOM — avoids any
+     media-query/viewport ambiguity between devices. */
 
   .list-row { display: flex; justify-content: space-between; padding: 9px 10px; border-bottom: 1px solid var(--grid-line); font-size: 13px; }
   .list-row:last-child { border-bottom: none; }
@@ -603,13 +606,14 @@
     .titlebar h1 .blink { animation: none; }
   }
 
-  /* Flag mode toggle — shown on touch devices */
+  /* Flag mode toggle — shown on touch devices only (driven by state.isTouchDevice in JS) */
   .flag-mode-bar {
     display: none;
     margin-bottom: 10px;
   }
-  @media (hover: none) and (pointer: coarse) {
-    .flag-mode-bar { display: flex; gap: 8px; }
+  .flag-mode-bar.touch-visible {
+    display: flex;
+    gap: 8px;
   }
   .flag-mode-btn {
     flex: 1;
@@ -786,7 +790,8 @@
     soundOn: true,
     scoresFilter: 'easy',
     theme: 'dream',
-    flagMode: false
+    flagMode: false,
+    isTouchDevice: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)
   };
 
   let scoreLog = [];
@@ -1094,7 +1099,7 @@
         </div>
         <div class="hud-stat flags"><span class="ico">⚑</span><span class="label">Flags</span><span id="flagsVal">${state.flagsLeft}/${state.mines}</span></div>
       </div>
-      <div class="flag-mode-bar">
+      <div class="flag-mode-bar ${state.isTouchDevice?'touch-visible':''}">
         <button class="flag-mode-btn ${!state.flagMode?'reveal-active':''}" id="revealModeBtn">👆 Reveal</button>
         <button class="flag-mode-btn ${state.flagMode?'flag-active':''}" id="flagModeBtn">⚑ Flag</button>
       </div>
@@ -1115,7 +1120,10 @@
         <button class="btn" id="playAgainBtn">Play Again</button>
         <button class="btn secondary" id="backMenuBtn">Main Menu</button>
       </div>
-      <div class="hint" id="hintLine">Tap: reveal &nbsp;·&nbsp; Switch to Flag mode to place flags &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>
+      ${state.isTouchDevice
+        ? `<div class="hint" id="hintLine">Tap: reveal &nbsp;·&nbsp; Switch to Flag mode to place flags &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>`
+        : `<div class="hint" id="hintLine">Left click: reveal &nbsp;·&nbsp; Right click: flag &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>`
+      }
     `;
     document.getElementById('faceBtn').addEventListener('click',()=> startGame(state.difficulty));
     document.getElementById('pauseBtn').addEventListener('click',()=>{ state.paused?resumeGame():pauseGame(); });
@@ -1144,10 +1152,16 @@
     for(let r=0;r<state.size;r++) for(let c=0;c<state.size;c++){
       const cell=document.createElement('div');
       cell.className='cell hidden'; cell.dataset.row=r; cell.dataset.col=c;
-      cell.addEventListener('click',()=> handleReveal(r,c));
+      cell.addEventListener('click',()=>{
+        if(state.flagMode) handleFlag(r,c);
+        else handleReveal(r,c);
+      });
       cell.addEventListener('contextmenu',(e)=>{ e.preventDefault(); handleFlag(r,c); });
       let pressTimer=null;
-      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(()=> handleFlag(r,c),450); },{passive:true});
+      cell.addEventListener('touchstart',()=>{
+        if(state.flagMode) return; // tap already flags in flag mode; avoid double-toggling via long-press
+        pressTimer=setTimeout(()=> handleFlag(r,c),450);
+      },{passive:true});
       cell.addEventListener('touchend',()=>{ if(pressTimer) clearTimeout(pressTimer); });
       cell.addEventListener('touchmove',()=>{ if(pressTimer) clearTimeout(pressTimer); });
       boardEl.appendChild(cell);
