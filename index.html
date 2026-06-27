@@ -603,9 +603,47 @@
     .titlebar h1 .blink { animation: none; }
   }
 
-  /* ══════════════════════════════════════════
-     RESPONSIVE — TABLET
-  ══════════════════════════════════════════ */
+  /* Flag mode toggle — shown on touch devices */
+  .flag-mode-bar {
+    display: none;
+    margin-bottom: 10px;
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .flag-mode-bar { display: flex; gap: 8px; }
+  }
+  .flag-mode-btn {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 9px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border: 1.5px solid var(--grid-line);
+    background: var(--hidden-cell);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all .15s;
+  }
+  .flag-mode-btn.reveal-active {
+    border-color: var(--accent-cyan);
+    background: color-mix(in srgb, var(--accent-cyan) 15%, transparent);
+    color: var(--accent-cyan);
+    text-shadow: 0 0 10px var(--accent-cyan);
+  }
+  .flag-mode-btn.flag-active {
+    border-color: var(--flag-color);
+    background: color-mix(in srgb, var(--flag-color) 15%, transparent);
+    color: var(--flag-color);
+    text-shadow: 0 0 10px var(--flag-color);
+  }
+
+
   @media (max-width: 680px) {
     body { padding: 16px 10px 40px; }
     .panel { padding: 14px; border-radius: 12px; }
@@ -747,7 +785,8 @@
     paused: false,
     soundOn: true,
     scoresFilter: 'easy',
-    theme: 'dream'
+    theme: 'dream',
+    flagMode: false
   };
 
   let scoreLog = [];
@@ -1055,6 +1094,10 @@
         </div>
         <div class="hud-stat flags"><span class="ico">⚑</span><span class="label">Flags</span><span id="flagsVal">${state.flagsLeft}/${state.mines}</span></div>
       </div>
+      <div class="flag-mode-bar">
+        <button class="flag-mode-btn ${!state.flagMode?'reveal-active':''}" id="revealModeBtn">👆 Reveal</button>
+        <button class="flag-mode-btn ${state.flagMode?'flag-active':''}" id="flagModeBtn">⚑ Flag</button>
+      </div>
       <div class="board-wrap">
         <div class="board ${state.paused?'paused-blur':''}" id="boardEl" style="grid-template-columns:repeat(${state.size},${getCellSize()}px);"></div>
         ${state.paused?`
@@ -1072,18 +1115,28 @@
         <button class="btn" id="playAgainBtn">Play Again</button>
         <button class="btn secondary" id="backMenuBtn">Main Menu</button>
       </div>
-      <div class="hint" id="hintLine">Left click: reveal &nbsp;·&nbsp; Right click: flag &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>
+      <div class="hint" id="hintLine">Tap: reveal &nbsp;·&nbsp; Switch to Flag mode to place flags &nbsp;·&nbsp; ${d.name} — ${state.size}×${state.size}, ${state.mines} mines</div>
     `;
     document.getElementById('faceBtn').addEventListener('click',()=> startGame(state.difficulty));
     document.getElementById('pauseBtn').addEventListener('click',()=>{ state.paused?resumeGame():pauseGame(); });
     document.getElementById('playAgainBtn').addEventListener('click',()=> startGame(state.difficulty));
     document.getElementById('backMenuBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
+    document.getElementById('revealModeBtn').addEventListener('click',()=>{ state.flagMode=false; updateFlagModeBar(); });
+    document.getElementById('flagModeBtn').addEventListener('click',()=>{ state.flagMode=true; updateFlagModeBar(); playSfx('flag'); });
     if(state.paused){
       document.getElementById('resumeBtn').addEventListener('click', resumeGame);
       document.getElementById('restartFromPauseBtn').addEventListener('click',()=> startGame(state.difficulty));
       document.getElementById('menuFromPauseBtn').addEventListener('click',()=>{ state.screen='mainmenu'; render(); });
     }
     buildBoardCells(); renderBoardOnly();
+  }
+
+  function updateFlagModeBar(){
+    const rb=document.getElementById('revealModeBtn');
+    const fb=document.getElementById('flagModeBtn');
+    if(!rb||!fb) return;
+    rb.className='flag-mode-btn'+(state.flagMode?'':' reveal-active');
+    fb.className='flag-mode-btn'+(state.flagMode?' flag-active':'');
   }
 
   function buildBoardCells(){
