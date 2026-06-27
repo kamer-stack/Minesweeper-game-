@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dream">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MINESWEEPER</title>
 <style>
   /* ══════════════════════════════════════════
@@ -601,16 +602,105 @@
     .cell.revealed, .cell.mine.exploded { animation: none; }
     .titlebar h1 .blink { animation: none; }
   }
-  @media (max-width: 420px) {
-    .cell { width: 28px; height: 28px; font-size: 13px; }
-    .diff-grid { grid-template-columns: 1fr; }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE — TABLET
+  ══════════════════════════════════════════ */
+  @media (max-width: 680px) {
+    body { padding: 16px 10px 40px; }
+    .panel { padding: 14px; border-radius: 12px; }
+    .titlebar { margin-bottom: 12px; }
+    .titlebar h1 { font-size: 22px; }
+    .theme-toggle { font-size: 10px; padding: 0 8px; }
+  }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE — MOBILE
+  ══════════════════════════════════════════ */
+  @media (max-width: 480px) {
+    body { padding: 10px 8px 32px; }
+    .panel { padding: 12px 10px; border-radius: 10px; }
+
+    /* Title */
+    .titlebar h1 { font-size: 18px; letter-spacing: 0.04em; }
+    .top-btns { gap: 4px; }
+    .theme-toggle { width: auto; padding: 0 7px; font-size: 9px; height: 30px; }
+    .sound-toggle { width: 30px; height: 30px; font-size: 13px; }
+
+    /* Menu options */
+    .menu-option { padding: 11px 12px; gap: 10px; }
+    .menu-option .opt-label { font-size: 13px; }
+    .mainmenu-title { font-size: 13px; letter-spacing: 0.12em; }
+    .mainmenu-rule { font-size: 10px; }
+
+    /* Difficulty grid — stack on mobile */
+    .diff-grid { grid-template-columns: 1fr; gap: 8px; }
+    .diff-card { padding: 10px 12px; border-radius: 8px; }
+    .diff-card .name { font-size: 12px; }
+    .diff-card .meta { font-size: 11px; }
+
+    /* Buttons */
+    .btn { font-size: 12px; padding: 11px 14px; }
+
+    /* HUD */
+    .hud { gap: 6px; margin-bottom: 10px; }
+    .hud-stat { padding: 6px 10px; font-size: 12px; min-width: 78px; border-radius: 8px; }
+    .hud-stat .label { font-size: 9px; }
+    .face-btn { width: 34px; height: 34px; font-size: 16px; border-radius: 8px; }
+    .pause-btn { width: 34px; height: 34px; font-size: 13px; border-radius: 8px; }
+
+    /* Board — auto-size cells to fit screen */
+    .board { gap: 2px; padding: 3px; }
+    .cell {
+      width: clamp(22px, calc((100vw - 80px) / 12), 32px);
+      height: clamp(22px, calc((100vw - 80px) / 12), 32px);
+      font-size: clamp(11px, 2.8vw, 15px);
+      border-radius: 3px;
+    }
+
+    /* Stats grid */
+    .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-box { padding: 10px 8px; border-radius: 8px; }
+    .stat-box .val { font-size: 18px; }
+    .stat-box .lbl { font-size: 9px; }
+
+    /* Scores list */
+    .list-row { font-size: 12px; padding: 8px 8px; }
+
+    /* Help */
+    .help-body { font-size: 12px; padding: 12px 14px; }
+
+    /* Pause card */
+    .pause-card { min-width: 160px; padding: 16px 18px; gap: 8px; }
+    .pause-title { font-size: 12px; }
+
+    /* Hint line */
+    .hint { font-size: 10px; }
+
+    /* Input */
+    .field input[type=text] { font-size: 13px; padding: 9px 10px; }
+  }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE — SMALL MOBILE (iPhone SE etc)
+  ══════════════════════════════════════════ */
+  @media (max-width: 360px) {
+    .titlebar h1 { font-size: 16px; }
+    .theme-toggle { display: none; } /* hide label, keep sound only */
+    .cell {
+      width: clamp(20px, calc((100vw - 60px) / 12), 28px);
+      height: clamp(20px, calc((100vw - 60px) / 12), 28px);
+      font-size: 10px;
+    }
+    .hud-stat { min-width: 68px; font-size: 11px; }
+    .btn { font-size: 11px; padding: 10px 12px; }
   }
 </style>
 </head>
-<body>
+<body class="dream-body">
 <div class="titlebar">
   <div class="top-btns">
-    <button class="theme-toggle" id="themeBtn" title="Switch theme">🌑 DARK</button>
+    <button class="theme-toggle" id="themeBtn" title="Switch theme">🌸 DREAM</button>
     <button class="sound-toggle" id="soundBtn" title="Toggle sound">🔊</button>
   </div>
   <h1>MINESWEEPER<span class="blink">_</span></h1>
@@ -626,6 +716,15 @@
     medium: { name: "Medium", size: 8,  pct: 18 },
     hard:   { name: "Hard",   size: 12, pct: 20 }
   };
+  function getCellSize(){
+    const vw = window.innerWidth;
+    const padding = 80; // panel padding + gaps
+    const maxCell = 34;
+    const minCell = 22;
+    const fit = Math.floor((vw - padding) / state.size);
+    return Math.max(minCell, Math.min(maxCell, fit));
+  }
+
   function bombCount(size, pct){ return Math.floor((size*size) * pct / 100); }
 
   let state = {
@@ -648,7 +747,7 @@
     paused: false,
     soundOn: true,
     scoresFilter: 'easy',
-    theme: 'dark'
+    theme: 'dream'
   };
 
   let scoreLog = [];
@@ -957,7 +1056,7 @@
         <div class="hud-stat flags"><span class="ico">⚑</span><span class="label">Flags</span><span id="flagsVal">${state.flagsLeft}/${state.mines}</span></div>
       </div>
       <div class="board-wrap">
-        <div class="board ${state.paused?'paused-blur':''}" id="boardEl" style="grid-template-columns:repeat(${state.size},34px);"></div>
+        <div class="board ${state.paused?'paused-blur':''}" id="boardEl" style="grid-template-columns:repeat(${state.size},${getCellSize()}px);"></div>
         ${state.paused?`
           <div class="pause-overlay"><div class="pause-card">
             <div class="pause-title">GAME PAUSED</div>
@@ -1170,6 +1269,12 @@
 
   document.getElementById('soundBtn').addEventListener('click', toggleSound);
   updateSoundBtn();
+
+  // Re-render game board on resize/orientation change
+  window.addEventListener('resize', ()=>{
+    if(state.screen === 'game') renderGame();
+  });
+
   render();
 })();
 </script>
